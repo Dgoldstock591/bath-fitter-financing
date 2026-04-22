@@ -458,6 +458,31 @@
       line-height: 1.58;
     }
 
+    .plan-cost-banner {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255, 243, 221, 0.95), rgba(255, 248, 236, 0.98));
+      border: 1px solid rgba(230, 190, 120, 0.55);
+      color: var(--warm-ink);
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .plan-cost-banner .label {
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    .plan-cost-banner .value {
+      font-size: 1rem;
+    }
+
     .metric-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -741,6 +766,7 @@
         <li>Reduced-APR plans use a fixed monthly payment factor with interest charged from the purchase date until the balance is paid in full.</li>
         <li>No-interest-if-paid-in-full plans can still accrue deferred interest if the promo balance is not fully paid by the end of the promo period.</li>
         <li>For deferred-interest plans, the statement minimum can be lower than the payoff target shown here. Paying only the minimum may not clear the balance in time.</li>
+        <li>Payment type cost percentages shown on each plan card come from the Payment Types chart in the 2026 Bath Fitter sales commission structure sheet.</li>
         <li>All figures are estimates only and should be confirmed with the active financing menu and final lender approval.</li>
       </ul>
     </section>
@@ -766,6 +792,7 @@
         kind: "deferred",
         months: 24,
         minimumFactor: 0.025,
+        transactionCostPct: 10.85,
         featured: true,
         badge: "Promoted 0%",
         description: "Current promoted no-interest option with the longest payoff window in this set when the balance is cleared on time."
@@ -778,6 +805,7 @@
         kind: "fixedApr",
         apr: 11.99,
         paymentFactor: 0.0175,
+        transactionCostPct: 3.85,
         featured: true,
         badge: "Promoted APR",
         description: "Current promoted reduced-APR option using the fixed-payment promo structure."
@@ -790,6 +818,7 @@
         kind: "fixedApr",
         apr: 3.99,
         paymentFactor: 0.0175,
+        transactionCostPct: 16.35,
         description: "Lower-APR reduced-rate alternative that remains available when that structure is specifically requested."
       },
       {
@@ -800,6 +829,7 @@
         kind: "deferred",
         months: 18,
         minimumFactor: 0.025,
+        transactionCostPct: 7.70,
         description: "Stronger no-interest payoff target for customers who want a shorter runway."
       },
       {
@@ -810,6 +840,7 @@
         kind: "deferred",
         months: 12,
         minimumFactor: 0.025,
+        transactionCostPct: 6.95,
         description: "Fastest no-interest finish for customers ready to pay aggressively."
       }
     ];
@@ -1021,6 +1052,15 @@
         .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
         .join("");
 
+      const costMarkup = typeof plan.transactionCostPct === "number"
+        ? `
+          <div class="plan-cost-banner">
+            <span class="label">Payment Type Cost</span>
+            <span class="value">${escapeHtml(plan.transactionCostPct.toFixed(2))}%</span>
+          </div>
+        `
+        : "";
+
       return `
         <article class="plan-card${plan.featured ? " featured" : ""}">
           <div class="plan-top">
@@ -1033,6 +1073,7 @@
           </div>
 
           <p class="plan-description">${escapeHtml(plan.description)}</p>
+          ${costMarkup}
 
           <div class="metric-grid">
             <div class="metric">
