@@ -720,14 +720,14 @@
         <div>
           <h2>Results</h2>
           <p id="resultsSummary">
-            For $8,000, payments range from $140 per month to $667 per month. Plan 960 keeps the long-term interest load
-            lowest in this set, while plan 925 gives the longest no-interest payoff window.
+            For $8,000, payments range from $140 per month to $667 per month. Plan 925 is the promoted no-interest
+            option, while plan 965 is the promoted reduced-APR option.
           </p>
           <div class="results-meta" aria-live="polite">
             <span id="heroAmount" class="results-pill strong">$8,000 financed</span>
             <span id="heroRange" class="results-pill">Monthly range: $140 to $667</span>
-            <span id="heroBalanced" class="results-pill">Best long-term value: 960 at $140/mo</span>
-            <span id="snapshotZero" class="results-pill">Best 0% window: 925 for 24 months</span>
+            <span id="heroBalanced" class="results-pill">Promoted APR plan: 965 at $140/mo</span>
+            <span id="snapshotZero" class="results-pill">Promoted 0% plan: 925 for 24 months</span>
           </div>
         </div>
       </div>
@@ -759,18 +759,6 @@
   <script>
     const PLANS = [
       {
-        id: "960",
-        title: "960 - Reduced APR",
-        alias: "Comfort Plan",
-        type: "Reduced APR Until Paid in Full",
-        kind: "fixedApr",
-        apr: 3.99,
-        paymentFactor: 0.0175,
-        featured: true,
-        badge: "Most Popular",
-        description: "Balanced long-term option with a lower APR and a fixed monthly payment factor."
-      },
-      {
         id: "925",
         title: "925 - No Interest if Paid in Full",
         alias: "24-Month Payoff",
@@ -779,8 +767,8 @@
         months: 24,
         minimumFactor: 0.025,
         featured: true,
-        badge: "Best 0%",
-        description: "Longest no-interest payoff window in this set when the full promo balance is cleared on time."
+        badge: "Promoted 0%",
+        description: "Current promoted no-interest option with the longest payoff window in this set when the balance is cleared on time."
       },
       {
         id: "965",
@@ -790,7 +778,19 @@
         kind: "fixedApr",
         apr: 11.99,
         paymentFactor: 0.0175,
-        description: "Same payment-factor style as 960, but the higher APR stretches the payoff longer and raises total cost."
+        featured: true,
+        badge: "Promoted APR",
+        description: "Current promoted reduced-APR option using the fixed-payment promo structure."
+      },
+      {
+        id: "960",
+        title: "960 - Reduced APR",
+        alias: "Comfort Plan",
+        type: "Reduced APR Until Paid in Full",
+        kind: "fixedApr",
+        apr: 3.99,
+        paymentFactor: 0.0175,
+        description: "Lower-APR reduced-rate alternative that remains available when that structure is specifically requested."
       },
       {
         id: "924",
@@ -819,7 +819,6 @@
     const amountError = document.getElementById("amountError");
     const plansContainer = document.getElementById("plans");
     const resetAmountButton = document.getElementById("resetAmount");
-    const presetButtons = Array.from(document.querySelectorAll("[data-preset]"));
 
     const heroAmount = document.getElementById("heroAmount");
     const heroRange = document.getElementById("heroRange");
@@ -949,15 +948,15 @@
 
     function buildPlanNote(plan, result) {
       if (plan.id === "960") {
-        return `Best long-term value in this lineup: ${roundForDisplay(result.payment)} per month with an estimated ${result.months}-month payoff at ${plan.apr.toFixed(2)}% APR.`;
+        return `Lower-APR reduced-rate alternative: ${roundForDisplay(result.payment)} per month with an estimated ${result.months}-month payoff at ${plan.apr.toFixed(2)}% APR.`;
       }
 
       if (plan.id === "925") {
-        return `Strongest no-interest runway here: about ${roundForDisplay(result.payment)} per month pays the promo balance off inside 24 months, but the statement minimum can start lower.`;
+        return `Current promoted no-interest option: about ${roundForDisplay(result.payment)} per month pays the promo balance off inside 24 months, but the statement minimum can start lower.`;
       }
 
       if (plan.id === "965") {
-        return `This plan keeps the same payment-factor style as 960, but the higher APR stretches payoff to about ${result.months} months and increases total interest.`;
+        return `Current promoted reduced-APR option: ${roundForDisplay(result.payment)} per month with the fixed-payment promo structure and an estimated ${result.months}-month payoff.`;
       }
 
       if (plan.id === "924") {
@@ -971,14 +970,14 @@
       if (plan.id === "960") {
         return [
           `A clean way to say it: "${plan.alias} lands around ${roundForDisplay(result.payment)} a month with a fixed payment style, and the estimated payoff is about ${result.months} months."`,
-          `If they ask what makes it different, explain that this is the strongest long-term value in this lineup because it keeps the same clean payment style while staying at the lower ${plan.apr.toFixed(2)}% APR.`
+          `If they ask what makes it different, explain that this is the lower-APR reduced-rate alternative and is usually the one to mention only when that specific structure is requested.`
         ];
       }
 
       if (plan.id === "965") {
         return [
           `A clean way to say it: "${plan.alias} uses the same fixed-payment style at about ${roundForDisplay(result.payment)} a month, but the higher APR stretches the estimated payoff to about ${result.months} months."`,
-          `If they ask whether it is better than 960, be direct: it is mainly a longer, higher-cost version of the same payment style, so 960 is usually the better value.`
+          `If they ask what to lead with, explain that this is the currently promoted reduced-APR option the team is leading with right now.`
         ];
       }
 
@@ -1070,25 +1069,18 @@
       const sortedByPayment = [...calculatedPlans].sort((left, right) => left.result.payment - right.result.payment);
       const lowestPayment = sortedByPayment[0];
       const highestPayment = sortedByPayment[sortedByPayment.length - 1];
-      const bestValue = calculatedPlans.find((entry) => entry.plan.id === "960");
-      const longestZero = calculatedPlans.find((entry) => entry.plan.id === "925");
+      const promotedApr = calculatedPlans.find((entry) => entry.plan.id === "965");
+      const promotedZero = calculatedPlans.find((entry) => entry.plan.id === "925");
 
       heroAmount.textContent = `${roundForDisplay(amount)} financed`;
       heroRange.textContent = `Monthly range: ${roundForDisplay(lowestPayment.result.payment)} to ${roundForDisplay(highestPayment.result.payment)}`;
-      heroBalanced.textContent = `Best long-term value: ${bestValue.plan.id} at ${roundForDisplay(bestValue.result.payment)}/mo`;
+      heroBalanced.textContent = `Promoted APR plan: ${promotedApr.plan.id} at ${roundForDisplay(promotedApr.result.payment)}/mo`;
 
-      snapshotZero.textContent = `Best 0% window: ${longestZero.plan.id} for ${longestZero.result.months} months`;
+      snapshotZero.textContent = `Promoted 0% plan: ${promotedZero.plan.id} for ${promotedZero.result.months} months`;
 
       resultsSummary.textContent =
         `For ${roundForDisplay(amount)}, payments range from ${roundForDisplay(lowestPayment.result.payment)} per month to ${roundForDisplay(highestPayment.result.payment)} per month. ` +
-        `Plan 960 keeps the long-term interest load lowest in this set, while plan 925 gives the longest no-interest payoff window.`;
-    }
-
-    function syncPresetButtons(amount) {
-      presetButtons.forEach((button) => {
-        const presetValue = Number(button.dataset.preset);
-        button.setAttribute("aria-pressed", String(Math.abs(presetValue - amount) < 0.005));
-      });
+        `Plan 925 is the promoted no-interest option, while plan 965 is the promoted reduced-APR option.`;
     }
 
     function showInvalidState(showError = true) {
@@ -1096,7 +1088,7 @@
       heroAmount.textContent = "Enter an amount";
       heroRange.textContent = "Monthly range: --";
       heroBalanced.textContent = "Waiting for input";
-      snapshotZero.textContent = "Best 0% window: --";
+      snapshotZero.textContent = "Promoted 0% plan: --";
       resultsSummary.textContent = "Enter a valid financing amount above $0 to compare plans.";
       plansContainer.innerHTML = `
         <div class="empty-state" role="status">
@@ -1114,7 +1106,6 @@
       }
 
       amountError.hidden = true;
-      syncPresetButtons(amount);
       amountInput.value = formatAmountForField(amount);
 
       const calculatedPlans = PLANS.map((plan) => ({
@@ -1142,7 +1133,6 @@
 
     amountInput.addEventListener("input", () => {
       const amount = parseAmount(amountInput.value);
-      syncPresetButtons(amount);
 
       if (amount > 0) {
         amountError.hidden = true;
@@ -1166,13 +1156,6 @@
       if (amount > 0) {
         amountInput.value = formatAmountForField(amount);
       }
-    });
-
-    presetButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        amountInput.value = formatAmountForField(Number(button.dataset.preset));
-        renderPlanner();
-      });
     });
 
     resetAmountButton.addEventListener("click", () => {
