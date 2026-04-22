@@ -729,7 +729,6 @@
 
           <div class="actions">
             <button type="submit" class="primary">Calculate Plans</button>
-            <button type="button" id="resetAmount" class="secondary">Reset to $8,000</button>
           </div>
         </form>
 
@@ -849,7 +848,6 @@
     const amountInput = document.getElementById("amount");
     const amountError = document.getElementById("amountError");
     const plansContainer = document.getElementById("plans");
-    const resetAmountButton = document.getElementById("resetAmount");
 
     const heroAmount = document.getElementById("heroAmount");
     const heroRange = document.getElementById("heroRange");
@@ -1197,13 +1195,6 @@
       if (amount > 0) {
         amountInput.value = formatAmountForField(amount);
       }
-    });
-
-    resetAmountButton.addEventListener("click", () => {
-      amountInput.value = "8,000";
-      renderPlanner();
-      amountInput.focus();
-      amountInput.select();
     });
 
     renderPlanner();
